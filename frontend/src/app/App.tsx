@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { createAssessment, createUser, deleteAssessment, deleteUser, listUsers } from "../shared/api/client";
-import type { AssessmentDetail, Provider, User } from "../shared/types";
+import type { AssessmentDetail, Provider, TreatmentControlTarget, User } from "../shared/types";
 import { AppShell } from "../shared/components/AppShell";
 import { UserGate } from "../features/users/UserGate";
 import { AssessmentPage } from "../pages/AssessmentPage";
 import { ArchivePage } from "../pages/ArchivePage";
 import { TreatmentPage } from "../pages/TreatmentPage";
+import { TreatmentControlPage } from "../pages/TreatmentControlPage";
 import { UsersPage } from "../pages/UsersPage";
 import { useI18n } from "../shared/i18n";
 
@@ -19,6 +20,7 @@ export default function App() {
   const [showUserGate, setShowUserGate] = useState(false);
   const [latestAssessment, setLatestAssessment] = useState<AssessmentDetail | null>(null);
   const [treatmentAssessment, setTreatmentAssessment] = useState<AssessmentDetail | null>(null);
+  const [controlTarget, setControlTarget] = useState<TreatmentControlTarget | null>(null);
   const [archiveRefreshToken, setArchiveRefreshToken] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -54,9 +56,15 @@ export default function App() {
   }
 
   function handleSelectUser(user: User) {
+    const isSwitchingSubject = activeUser?.public_id !== user.public_id;
     setActiveUser(user);
     setShowUserGate(false);
     window.localStorage.setItem(ACTIVE_USER_STORAGE_KEY, user.public_id);
+    if (isSwitchingSubject) {
+      setLatestAssessment(null);
+      setTreatmentAssessment(null);
+      setControlTarget(null);
+    }
   }
 
   async function handleCreateUser(payload: { name: string; notes?: string }) {
@@ -86,6 +94,7 @@ export default function App() {
       });
       setLatestAssessment(assessment);
       setTreatmentAssessment(assessment);
+      setControlTarget(null);
       setArchiveRefreshToken((value) => value + 1);
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : t("genericError"));
@@ -96,6 +105,15 @@ export default function App() {
 
   function handleSelectTreatmentAssessment(assessment: AssessmentDetail) {
     setTreatmentAssessment(assessment);
+    setControlTarget(null);
+  }
+
+  function handleOpenTreatmentControl(assessment: AssessmentDetail, zoneName: string) {
+    setTreatmentAssessment(assessment);
+    setControlTarget({
+      assessmentId: assessment.id,
+      zoneName
+    });
   }
 
   async function handleDeleteUser(user: User) {
@@ -120,6 +138,10 @@ export default function App() {
     if (treatmentAssessment?.user_public_id === user.public_id) {
       setTreatmentAssessment(null);
     }
+
+    if (controlTarget && (treatmentAssessment?.user_public_id === user.public_id || latestAssessment?.user_public_id === user.public_id)) {
+      setControlTarget(null);
+    }
   }
 
   async function handleDeleteAssessment(assessmentId: string) {
@@ -131,6 +153,10 @@ export default function App() {
 
     if (treatmentAssessment?.id === assessmentId) {
       setTreatmentAssessment(null);
+    }
+
+    if (controlTarget?.assessmentId === assessmentId) {
+      setControlTarget(null);
     }
 
     setArchiveRefreshToken((value) => value + 1);
@@ -177,6 +203,18 @@ export default function App() {
                 <TreatmentPage
                   activeUser={activeUser}
                   assessment={treatmentAssessment ?? latestAssessment}
+                  onOpenControl={handleOpenTreatmentControl}
+                />
+              }
+            />
+            <Route
+              path="/control"
+              element={
+                <TreatmentControlPage
+                  activeUser={activeUser}
+                  assessment={treatmentAssessment ?? latestAssessment}
+                  controlTarget={controlTarget}
+                  onSelectZone={handleOpenTreatmentControl}
                 />
               }
             />

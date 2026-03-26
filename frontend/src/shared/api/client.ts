@@ -1,4 +1,12 @@
-import type { AppLanguage, AssessmentDetail, AssessmentListItem, Provider, User } from "../types";
+import type {
+  AppLanguage,
+  AssessmentDetail,
+  AssessmentListItem,
+  Provider,
+  TreatmentControlOptions,
+  TreatmentControlSession,
+  User
+} from "../types";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000/api";
 const FILE_BASE = `${API_BASE.replace(/\/api$/, "")}/files`;
@@ -48,6 +56,24 @@ export function getAssessment(assessmentId: string): Promise<AssessmentDetail> {
 export function deleteAssessment(assessmentId: string): Promise<void> {
   return request<void>(`/assessments/${assessmentId}`, {
     method: "DELETE"
+  });
+}
+
+export function getTreatmentControlOptions(): Promise<TreatmentControlOptions> {
+  return request<TreatmentControlOptions>("/treatment-control/options");
+}
+
+export function createTreatmentControlPreset(payload: {
+  assessmentId: string;
+  zoneName: string;
+}): Promise<TreatmentControlSession> {
+  return request<TreatmentControlSession>("/treatment-control/preset", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      assessment_id: payload.assessmentId,
+      zone_name: payload.zoneName
+    })
   });
 }
 

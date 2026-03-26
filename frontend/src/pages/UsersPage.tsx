@@ -45,11 +45,19 @@ export function UsersPage({ users, activeUser, onSelectUser, onCreateUser, onDel
 
         <div className="user-list">
           {users.map((user) => (
-            <div key={user.public_id} className="list-card user-card">
+            <div key={user.public_id} className={`list-card user-card ${activeUser?.public_id === user.public_id ? "active" : ""}`}>
               <button type="button" className="list-card-main" onClick={() => onSelectUser(user)}>
-                <strong>{user.name}</strong>
-                <span>{user.public_id}</span>
-                <span>{activeUser?.public_id === user.public_id ? t("currentUser") : t("switchCurrentUser")}</span>
+                <div className="user-card-head">
+                  <div className="user-card-meta">
+                    <strong>{user.name}</strong>
+                    <span>{user.public_id}</span>
+                  </div>
+                  <div className="user-card-status">
+                    {activeUser?.public_id === user.public_id ? <span className="user-active-pill">{t("activeBadge")}</span> : null}
+                    <span className={`selection-indicator ${activeUser?.public_id === user.public_id ? "active" : ""}`} aria-hidden="true" />
+                  </div>
+                </div>
+                {user.notes ? <span className="muted">{user.notes}</span> : null}
               </button>
               <button type="button" className="danger-button" onClick={() => void handleDelete(user)}>
                 {t("deleteUserAction")}

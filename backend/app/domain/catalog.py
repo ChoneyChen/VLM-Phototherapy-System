@@ -46,6 +46,8 @@ LIGHT_TYPE_LABELS = {
     "mixed": {"en": "Mixed Spectrum", "zh": "复合光谱"},
 }
 
+LIGHT_COLOR_CODES = ["red", "orange", "yellow", "green", "cyan", "blue", "purple"]
+
 LIGHT_TYPE_ALIASES = {
     "red": "red",
     "red light": "red",
@@ -74,3 +76,16 @@ VALID_LIGHT_TYPES = set(LIGHT_TYPE_LABELS.keys())
 
 TEMPERATURE_RANGE = {"min": 30, "max": 42, "unit": "celsius"}
 DURATION_RANGE = {"min": 4, "max": 20, "unit": "minutes"}
+CONTROL_TEMPERATURE_RANGE = {"min": 20, "max": 40, "step": 1, "unit": "celsius"}
+CONTROL_BRIGHTNESS_RANGE = {"min": 0, "max": 100, "step": 1, "unit": "percent"}
+CONTROL_HUMIDIFICATION_FREQUENCY_RANGE = {"min": 0, "max": 100, "step": 1, "unit": "level"}
+CONTROL_TIMER_RANGE = {"min": 1, "max": 60, "step": 1, "unit": "minutes"}
+
+LIGHT_TYPE_TO_COLOR_MAP = {
+    "red": "red",
+    "blue": "blue",
+    "amber": "yellow",
+    "green": "green",
+    "infrared": "red",
+    "mixed": "purple",
+}

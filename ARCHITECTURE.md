@@ -144,6 +144,14 @@ HTTP API 层。
 2. 后端从数据库读取评估摘要与详情
 3. 前端按时间线展示每日状态与对应图像
 
+### 治疗方案与治疗控制流程
+
+1. 前端在治疗方案页只负责展示按区域归档的治疗建议，并允许用户选择某一条方案
+2. 被选中的方案必须转换为独立的 `treatment control session`
+3. 后端根据评估记录、区域代码和推荐方案生成控制预设
+4. 前端治疗控制页只负责编辑结构化控制值，不直接修改原始评估结果
+5. 后续硬件接入时，只允许消费 `treatment control session`，不得直接消费模型自由文本
+
 ## 五、命名与约束
 
 ### 用户标识
@@ -193,6 +201,8 @@ HTTP API 层。
 - 前端根据当前语言对标准码做显示映射
 - 可读文本必须支持中英文输出
 - 与硬件控制直接相关的字段不得使用自由文本作为控制参数
+- 治疗控制中的光色、亮度、温度、加湿频率、定时等字段必须保留英文标准码或数值，不得使用中文字段名作为协议字段
+- 中文模式下页面显示允许中文化，但后台存储和共享合同必须保持英文标准码稳定
 
 ## 六、文档与扩展
 
@@ -222,12 +232,31 @@ HTTP API 层。
 必须保留以下能力抽象：
 
 - 光色控制
+- 亮度控制
 - 温度控制
-- 加湿控制
+- 加湿频率控制
 - 治疗时长控制
 - 治疗任务下发
 
-硬件相关数据必须使用结构化命令协议输出，至少包含：
+硬件相关数据必须使用结构化命令协议输出。当前至少保留两类结构：
+
+- `phototherapy_command`
+- `treatment_control_session`
+
+其中 `treatment_control_session` 至少包含：
+
+- `assessment_id`
+- `zone_code`
+- `recommended_issue_category_code`
+- `recommended_light_type_code`
+- `light_color_code`
+- `brightness_percent`
+- `temperature_celsius`
+- `humidification_frequency_level`
+- `timer_minutes`
+- `execution_channel`
+
+而评估阶段内嵌的 `phototherapy_command` 至少包含：
 
 - `zone_code`
 - `light_type_code`
@@ -248,7 +277,8 @@ HTTP API 层。
 - 每日图像与状态归档
 - 面部档案浏览
 - 中英文切换
-- 前端四页面基础框架
+- 前端五页面基础框架
+- 治疗页与治疗控制页分离
 - 治疗页与硬件层预留接口
 
 后续迭代：

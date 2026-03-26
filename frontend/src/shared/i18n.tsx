@@ -6,6 +6,7 @@ type MessageKey =
   | "navAssessment"
   | "navArchive"
   | "navTreatment"
+  | "navControl"
   | "navUsers"
   | "activeSubject"
   | "selectUser"
@@ -65,12 +66,32 @@ type MessageKey =
   | "hardwareCommandSchema"
   | "executionChannel"
   | "safetyRange"
+  | "controlWorkspace"
+  | "controlTitle"
+  | "controlDescription"
+  | "selectPlanToControl"
+  | "pickZoneToControl"
+  | "goToTreatmentPlans"
+  | "recommendedPlan"
+  | "recommendedIssue"
+  | "recommendedSummary"
+  | "controlValues"
+  | "lightColor"
+  | "brightness"
+  | "humidificationFrequency"
+  | "timer"
+  | "commandPreview"
+  | "deviceBindingReserved"
+  | "deviceBindingReservedDescription"
+  | "controlLoading"
+  | "openControl"
   | "roster"
   | "userManagement"
   | "create"
   | "createUser"
   | "switchCurrentUser"
   | "currentUser"
+  | "activeBadge"
   | "output"
   | "focusAreas"
   | "userPlaceholder"
@@ -98,13 +119,14 @@ const messages: Record<AppLanguage, Record<MessageKey, string>> = {
     navAssessment: "Face Assessment",
     navArchive: "Face Archive",
     navTreatment: "Treatment Plan",
+    navControl: "Treatment Control",
     navUsers: "Users",
     activeSubject: "Active Subject",
     selectUser: "Select or create a user",
     bindUserFirst: "Bind a subject profile before entering the workflow.",
     language: "Language",
     heroEyebrow: "Production Workspace",
-    heroDelivered: "Delivered in this phase: multi-user entry, face assessment, daily image archive, and historical review.",
+    heroDelivered: "Delivered in this phase: multi-user entry, face assessment, daily image archive, treatment planning, and reserved control console.",
     waitingUser: "Waiting for user selection",
     waitingUserDescription: "Choose or create a subject profile before entering the workspace.",
     entryGateTitle: "Choose a subject before entering the assessment workflow",
@@ -157,12 +179,32 @@ const messages: Record<AppLanguage, Record<MessageKey, string>> = {
     hardwareCommandSchema: "Command schema",
     executionChannel: "Execution channel",
     safetyRange: "Safety range",
+    controlWorkspace: "Control Workspace",
+    controlTitle: "Treatment Control",
+    controlDescription: "A structured device-control console derived from the selected treatment plan.",
+    selectPlanToControl: "Choose a treatment plan card or zone to preload the control console.",
+    pickZoneToControl: "Pick a zone to enter direct control",
+    goToTreatmentPlans: "Complete an assessment first, or open the treatment page to choose a zone preset.",
+    recommendedPlan: "Recommended plan",
+    recommendedIssue: "Issue",
+    recommendedSummary: "Clinical summary",
+    controlValues: "Control values",
+    lightColor: "Light color",
+    brightness: "Brightness",
+    humidificationFrequency: "Humidification frequency",
+    timer: "Timer",
+    commandPreview: "Command preview",
+    deviceBindingReserved: "Device binding reserved",
+    deviceBindingReservedDescription: "This console edits a reserved control session only. Physical execution will be bound after the hardware protocol is finalized.",
+    controlLoading: "Loading control preset...",
+    openControl: "Open control console",
     roster: "Roster",
     userManagement: "User Management",
     create: "Create",
     createUser: "Create user",
     switchCurrentUser: "Switch to current user",
     currentUser: "Current user",
+    activeBadge: "Active",
     output: "Output",
     focusAreas: "Focus areas",
     userPlaceholder: "For example: Patient Lin",
@@ -187,13 +229,14 @@ const messages: Record<AppLanguage, Record<MessageKey, string>> = {
     navAssessment: "面部测评",
     navArchive: "面部档案",
     navTreatment: "治疗方案",
+    navControl: "治疗控制",
     navUsers: "用户",
     activeSubject: "当前对象",
     selectUser: "选择或创建用户",
     bindUserFirst: "进入工作流前请先绑定人物档案。",
     language: "语言切换",
     heroEyebrow: "Production Workspace",
-    heroDelivered: "当前阶段已交付：多用户入口、面部状态识别、每日图像归档、历史档案浏览。",
+    heroDelivered: "当前阶段已交付：多用户入口、面部状态识别、每日图像归档、治疗方案浏览，以及预留式治疗控制台。",
     waitingUser: "等待用户选择",
     waitingUserDescription: "进入工作台前，请先选择或创建一个人物档案。",
     entryGateTitle: "先选择用户，再进入测评工作流",
@@ -246,12 +289,32 @@ const messages: Record<AppLanguage, Record<MessageKey, string>> = {
     hardwareCommandSchema: "命令协议",
     executionChannel: "执行通道",
     safetyRange: "安全范围",
+    controlWorkspace: "治疗控制工作台",
+    controlTitle: "治疗控制",
+    controlDescription: "该栏用于承接治疗方案并生成结构化的设备控制预设，后续将作为物理设备对接的核心工作区。",
+    selectPlanToControl: "请选择一个治疗方案卡片或分区，以载入治疗控制预设。",
+    pickZoneToControl: "选择分区进入直接控制",
+    goToTreatmentPlans: "请先完成一次测评，或前往治疗方案页选择要控制的分区。",
+    recommendedPlan: "推荐方案",
+    recommendedIssue: "对应问题",
+    recommendedSummary: "状况简述",
+    controlValues: "控制参数",
+    lightColor: "光色",
+    brightness: "亮度",
+    humidificationFrequency: "加湿频率",
+    timer: "定时",
+    commandPreview: "指令预览",
+    deviceBindingReserved: "设备接口预留",
+    deviceBindingReservedDescription: "当前控制台只编辑保留的控制会话，真实物理执行会在后续硬件协议明确后接入。",
+    controlLoading: "正在载入控制预设...",
+    openControl: "打开治疗控制",
     roster: "Roster",
     userManagement: "用户档案管理",
     create: "Create",
     createUser: "创建用户",
     switchCurrentUser: "点击切换为当前用户",
     currentUser: "当前使用中",
+    activeBadge: "使用中",
     output: "Output",
     focusAreas: "关注重点",
     userPlaceholder: "例如：Patient Lin",
@@ -307,6 +370,16 @@ const lightLabels: Record<string, Record<AppLanguage, string>> = {
   mixed: { en: "Mixed Spectrum", zh: "复合光谱" }
 };
 
+const lightColorLabels: Record<string, Record<AppLanguage, string>> = {
+  red: { en: "Red", zh: "红色" },
+  orange: { en: "Orange", zh: "橙色" },
+  yellow: { en: "Yellow", zh: "黄色" },
+  green: { en: "Green", zh: "绿色" },
+  cyan: { en: "Cyan", zh: "青色" },
+  blue: { en: "Blue", zh: "蓝色" },
+  purple: { en: "Purple", zh: "紫色" }
+};
+
 const severityLabels: Record<string, Record<AppLanguage, string>> = {
   low: { en: "Low", zh: "低" },
   medium: { en: "Medium", zh: "中" },
@@ -322,6 +395,7 @@ interface I18nContextValue {
   labelZone: (code: string) => string;
   labelIssue: (code: string) => string;
   labelLight: (code: string) => string;
+  labelColor: (code: string) => string;
   labelSeverity: (code: string) => string;
   labelBoolean: (value: boolean) => string;
 }
@@ -348,6 +422,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       labelZone: (code) => zoneLabels[code as keyof typeof zoneLabels]?.[language] ?? code,
       labelIssue: (code) => issueLabels[code]?.[language] ?? code,
       labelLight: (code) => lightLabels[code]?.[language] ?? code,
+      labelColor: (code) => lightColorLabels[code]?.[language] ?? code,
       labelSeverity: (code) => severityLabels[code]?.[language] ?? code,
       labelBoolean: (value) => (language === "zh" ? (value ? "是" : "否") : value ? "Yes" : "No")
     }),

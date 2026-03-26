@@ -1,14 +1,17 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { AssessmentDetail, User } from "../shared/types";
 import { useI18n } from "../shared/i18n";
 
 interface TreatmentPageProps {
   activeUser: User;
   assessment: AssessmentDetail | null;
+  onOpenControl: (assessment: AssessmentDetail, zoneName: string) => void;
 }
 
-export function TreatmentPage({ activeUser, assessment }: TreatmentPageProps) {
-  const { labelBoolean, labelIssue, labelLight, labelZone, pickText, t } = useI18n();
+export function TreatmentPage({ activeUser, assessment, onOpenControl }: TreatmentPageProps) {
+  const navigate = useNavigate();
+  const { labelBoolean, labelIssue, labelLight, labelSeverity, labelZone, pickText, t } = useI18n();
   const [filter, setFilter] = useState<"all" | "nonLow" | "highOnly">("all");
   const visibleZones =
     assessment?.zones.filter((zone) => {
@@ -20,6 +23,14 @@ export function TreatmentPage({ activeUser, assessment }: TreatmentPageProps) {
       }
       return true;
     }) ?? [];
+
+  function handleOpenZoneControl(zoneName: string) {
+    if (!assessment) {
+      return;
+    }
+    onOpenControl(assessment, zoneName);
+    navigate("/control");
+  }
 
   return (
     <section className="panel">
@@ -59,25 +70,57 @@ export function TreatmentPage({ activeUser, assessment }: TreatmentPageProps) {
           {visibleZones.length > 0 ? (
             <div className="zone-grid compact">
               {visibleZones.map((zone) => (
-                <article key={zone.zone_name} className="zone-card">
-                  <strong>{labelZone(zone.zone_name)}</strong>
-                  <span>
-                    {t("problem")}: {labelIssue(zone.issue_category_code)}
-                  </span>
-                  <span>
-                    {t("lightType")}: {labelLight(zone.treatment_plan.light_type_code)}
-                  </span>
-                  <span>
-                    {t("temperature")}: {zone.treatment_plan.temperature_celsius}°C
-                  </span>
-                  <span>
-                    {t("duration")}: {zone.treatment_plan.duration_minutes} min
-                  </span>
-                  <span>
-                    {t("humidification")}: {labelBoolean(zone.treatment_plan.humidification_enabled)}
-                  </span>
-                  <p>{pickText(zone.treatment_plan.notes_texts)}</p>
-                </article>
+                <button
+                  key={zone.zone_name}
+                  type="button"
+                  className="treatment-plan-card"
+                  onClick={() => handleOpenZoneControl(zone.zone_name)}
+                >
+                  <div className="plan-card-head">
+                    <div>
+                      <span className="eyebrow">{labelZone(zone.zone_name)}</span>
+                      <strong>{labelIssue(zone.issue_category_code)}</strong>
+                    </div>
+                    <span className={`severity-pill ${zone.severity}`}>{labelSeverity(zone.severity)}</span>
+                  </div>
+
+                  <div className="plan-card-body">
+                    <div className="plan-row">
+                      <span className="plan-row-label">{t("problem")}</span>
+                      <strong>{labelIssue(zone.issue_category_code)}</strong>
+                    </div>
+                    <div className="plan-row">
+                      <span className="plan-row-label">{t("treatmentRecommendation")}</span>
+                      <div className="plan-meta-grid">
+                        <div className="plan-meta-item">
+                          <span className="plan-row-label">{t("lightType")}</span>
+                          <strong>{labelLight(zone.treatment_plan.light_type_code)}</strong>
+                        </div>
+                        <div className="plan-meta-item">
+                          <span className="plan-row-label">{t("temperature")}</span>
+                          <strong>{zone.treatment_plan.temperature_celsius}°C</strong>
+                        </div>
+                        <div className="plan-meta-item">
+                          <span className="plan-row-label">{t("duration")}</span>
+                          <strong>{zone.treatment_plan.duration_minutes} min</strong>
+                        </div>
+                        <div className="plan-meta-item">
+                          <span className="plan-row-label">{t("humidification")}</span>
+                          <strong>{labelBoolean(zone.treatment_plan.humidification_enabled)}</strong>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="plan-row">
+                      <span className="plan-row-label">{t("notes")}</span>
+                      <p>{pickText(zone.treatment_plan.notes_texts)}</p>
+                    </div>
+                  </div>
+
+                  <div className="plan-card-footer">
+                    <span>{t("openControl")}</span>
+                    <span aria-hidden="true">+</span>
+                  </div>
+                </button>
               ))}
             </div>
           ) : (

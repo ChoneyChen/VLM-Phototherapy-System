@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.api.routers import assessments, health, users
+from app.api.routers import assessments, health, treatment_control, users
 from app.core.bootstrap import initialize_application
 from app.core.config import get_settings
 
@@ -20,6 +20,7 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(users.router, prefix=settings.api_prefix)
 app.include_router(assessments.router, prefix=settings.api_prefix)
+app.include_router(treatment_control.router, prefix=settings.api_prefix)
 app.mount(
     "/files",
     StaticFiles(directory=str(settings.backend_dir / "data"), check_dir=False),

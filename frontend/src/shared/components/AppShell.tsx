@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import type { ReactNode } from "react";
-import type { AppLanguage, User } from "../types";
+import type { User } from "../types";
 import { useI18n } from "../i18n";
 
 interface AppShellProps {
@@ -13,6 +13,7 @@ const navigation = [
   { to: "/assessment", labelKey: "navAssessment", eyebrow: "Assessment" },
   { to: "/archive", labelKey: "navArchive", eyebrow: "Archive" },
   { to: "/treatment", labelKey: "navTreatment", eyebrow: "Treatment" },
+  { to: "/control", labelKey: "navControl", eyebrow: "Control" },
   { to: "/users", labelKey: "navUsers", eyebrow: "Users" }
 ] as const;
 

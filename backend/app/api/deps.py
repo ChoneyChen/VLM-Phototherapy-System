@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.domain.services.assessment_service import SkinAssessmentService
+from app.domain.services.treatment_control_service import TreatmentControlService
 from app.domain.services.user_service import UserService
 from app.infrastructure.db.repositories import AssessmentRepository, UserRepository
 from app.infrastructure.db.session import SessionLocal
@@ -33,3 +34,7 @@ def get_assessment_service() -> SkinAssessmentService:
         image_archive=ImageArchiveService(settings=settings),
         model_factory=VisionModelFactory(settings=settings),
     )
+
+
+def get_treatment_control_service() -> TreatmentControlService:
+    return TreatmentControlService(assessment_repository=AssessmentRepository())
