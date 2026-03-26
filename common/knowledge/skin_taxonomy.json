@@ -1,0 +1,223 @@
+{
+  "zones": [
+    {
+      "code": "Forehead Zone",
+      "labels": {
+        "en": "Forehead Zone",
+        "zh": "额头区"
+      }
+    },
+    {
+      "code": "Periorbital Zone",
+      "labels": {
+        "en": "Periorbital Zone",
+        "zh": "眼周区"
+      }
+    },
+    {
+      "code": "Nasal Zone",
+      "labels": {
+        "en": "Nasal Zone",
+        "zh": "鼻部区"
+      }
+    },
+    {
+      "code": "Left Malar Zone",
+      "labels": {
+        "en": "Left Malar Zone",
+        "zh": "左颧颊区"
+      }
+    },
+    {
+      "code": "Right Malar Zone",
+      "labels": {
+        "en": "Right Malar Zone",
+        "zh": "右颧颊区"
+      }
+    },
+    {
+      "code": "Perioral Zone",
+      "labels": {
+        "en": "Perioral Zone",
+        "zh": "口周区"
+      }
+    },
+    {
+      "code": "Mandibular/Chin Zone",
+      "labels": {
+        "en": "Mandibular/Chin Zone",
+        "zh": "下颌/下巴区"
+      }
+    },
+    {
+      "code": "Jawline Zone",
+      "labels": {
+        "en": "Jawline Zone",
+        "zh": "下颌线区"
+      }
+    }
+  ],
+  "issue_categories": [
+    {
+      "code": "dehydration",
+      "labels": {
+        "en": "Dehydration",
+        "zh": "缺水干燥"
+      }
+    },
+    {
+      "code": "erythema",
+      "labels": {
+        "en": "Erythema",
+        "zh": "泛红敏感"
+      }
+    },
+    {
+      "code": "oil_imbalance",
+      "labels": {
+        "en": "Oil Imbalance",
+        "zh": "油脂失衡"
+      }
+    },
+    {
+      "code": "texture_irregularity",
+      "labels": {
+        "en": "Texture Irregularity",
+        "zh": "纹理粗糙"
+      }
+    },
+    {
+      "code": "pigmentation",
+      "labels": {
+        "en": "Pigmentation",
+        "zh": "色沉暗沉"
+      }
+    },
+    {
+      "code": "comedonal_congestion",
+      "labels": {
+        "en": "Comedonal Congestion",
+        "zh": "粉刺堵塞"
+      }
+    },
+    {
+      "code": "barrier_sensitivity",
+      "labels": {
+        "en": "Barrier Sensitivity",
+        "zh": "屏障脆弱"
+      }
+    },
+    {
+      "code": "elasticity_loss",
+      "labels": {
+        "en": "Elasticity Loss",
+        "zh": "弹性下降"
+      }
+    },
+    {
+      "code": "puffiness",
+      "labels": {
+        "en": "Puffiness",
+        "zh": "浮肿"
+      }
+    },
+    {
+      "code": "uneven_tone",
+      "labels": {
+        "en": "Uneven Tone",
+        "zh": "肤色不均"
+      }
+    },
+    {
+      "code": "insufficient_data",
+      "labels": {
+        "en": "Insufficient Data",
+        "zh": "信息不足"
+      }
+    }
+  ],
+  "light_types": [
+    {
+      "code": "red",
+      "labels": {
+        "en": "Red Light",
+        "zh": "红光"
+      }
+    },
+    {
+      "code": "blue",
+      "labels": {
+        "en": "Blue Light",
+        "zh": "蓝光"
+      }
+    },
+    {
+      "code": "amber",
+      "labels": {
+        "en": "Amber Light",
+        "zh": "琥珀光"
+      }
+    },
+    {
+      "code": "green",
+      "labels": {
+        "en": "Green Light",
+        "zh": "绿光"
+      }
+    },
+    {
+      "code": "infrared",
+      "labels": {
+        "en": "Infrared Light",
+        "zh": "红外光"
+      }
+    },
+    {
+      "code": "mixed",
+      "labels": {
+        "en": "Mixed Spectrum",
+        "zh": "复合光谱"
+      }
+    }
+  ],
+  "severity_scale": [
+    {
+      "code": "low",
+      "labels": {
+        "en": "Low",
+        "zh": "低"
+      }
+    },
+    {
+      "code": "medium",
+      "labels": {
+        "en": "Medium",
+        "zh": "中"
+      }
+    },
+    {
+      "code": "high",
+      "labels": {
+        "en": "High",
+        "zh": "高"
+      }
+    }
+  ],
+  "hardware_constraints": {
+    "temperature_celsius": {
+      "min": 30,
+      "max": 42,
+      "unit": "celsius"
+    },
+    "duration_minutes": {
+      "min": 4,
+      "max": 20,
+      "unit": "minutes"
+    },
+    "humidification_rules": [
+      "Enable humidification when dehydration or barrier sensitivity is dominant.",
+      "Prefer lower heat when erythema or visible sensitivity is present."
+    ],
+    "default_execution_channel": "reserved"
+  }
+}

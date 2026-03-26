@@ -1,0 +1,58 @@
+{
+  "cases": [
+    {
+      "case_id": "CASE-001",
+      "dominant_issue": "dehydration",
+      "skin_profile": {
+        "en": "Mild dehydration with diffuse dullness across forehead and malar zones.",
+        "zh": "额头与颧颊区存在轻度缺水和弥散性暗沉。"
+      },
+      "recommended_plan": {
+        "light_type_code": "amber",
+        "temperature_celsius": 34,
+        "duration_minutes": 10,
+        "humidification_enabled": true,
+        "notes_texts": {
+          "en": "Prioritize hydration support and avoid excessive thermal stress.",
+          "zh": "优先补水支持，避免过高热刺激。"
+        }
+      }
+    },
+    {
+      "case_id": "CASE-002",
+      "dominant_issue": "erythema",
+      "skin_profile": {
+        "en": "Localized redness around nasal and perioral areas with possible barrier irritation.",
+        "zh": "鼻周与口周区域存在局部泛红，并伴随可能的屏障刺激。"
+      },
+      "recommended_plan": {
+        "light_type_code": "red",
+        "temperature_celsius": 31,
+        "duration_minutes": 8,
+        "humidification_enabled": true,
+        "notes_texts": {
+          "en": "Favor soothing exposure with lower temperature.",
+          "zh": "优先采用舒缓型照射，并保持较低温度。"
+        }
+      }
+    },
+    {
+      "case_id": "CASE-003",
+      "dominant_issue": "oil_imbalance",
+      "skin_profile": {
+        "en": "T-zone oiliness with visible congestion and mild textural irregularity.",
+        "zh": "T 区油脂偏多，可见堵塞并伴有轻度纹理不平整。"
+      },
+      "recommended_plan": {
+        "light_type_code": "blue",
+        "temperature_celsius": 33,
+        "duration_minutes": 7,
+        "humidification_enabled": false,
+        "notes_texts": {
+          "en": "Use shorter sessions focused on congestion control.",
+          "zh": "采用偏短疗程，重点控制堵塞和油脂负担。"
+        }
+      }
+    }
+  ]
+}

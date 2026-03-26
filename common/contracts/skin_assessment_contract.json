@@ -1,0 +1,53 @@
+{
+  "provider": "vision-llm",
+  "output_contract": {
+    "analysis_language": "en | zh",
+    "overall_condition_texts": {
+      "en": "string",
+      "zh": "string"
+    },
+    "overall_severity": "low | medium | high",
+    "overall_summary_texts": {
+      "en": "string",
+      "zh": "string"
+    },
+    "recommended_focus_texts": {
+      "en": [
+        "string"
+      ],
+      "zh": [
+        "string"
+      ]
+    },
+    "zones": [
+      {
+        "zone_name": "Forehead Zone | Periorbital Zone | Nasal Zone | Left Malar Zone | Right Malar Zone | Perioral Zone | Mandibular/Chin Zone | Jawline Zone",
+        "issue_category_code": "dehydration | erythema | oil_imbalance | texture_irregularity | pigmentation | comedonal_congestion | barrier_sensitivity | elasticity_loss | puffiness | uneven_tone | insufficient_data",
+        "severity": "low | medium | high",
+        "summary_texts": {
+          "en": "string",
+          "zh": "string"
+        },
+        "treatment_plan": {
+          "light_type_code": "red | blue | amber | green | infrared | mixed",
+          "temperature_celsius": 0,
+          "duration_minutes": 0,
+          "humidification_enabled": true,
+          "notes_texts": {
+            "en": "string",
+            "zh": "string"
+          },
+          "hardware_profile": {
+            "schema_version": "phototherapy_command.v1",
+            "execution_channel": "reserved",
+            "zone_code": "string",
+            "light_type_code": "string",
+            "temperature_celsius": 0,
+            "duration_minutes": 0,
+            "humidification_enabled": true
+          }
+        }
+      }
+    ]
+  }
+}
