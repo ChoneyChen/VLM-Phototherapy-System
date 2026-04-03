@@ -10,7 +10,22 @@ class NumericControlOption(BaseModel):
     unit: str
 
 
+class ZoneLedSetting(BaseModel):
+    zone_name: str
+    issue_category_code: str
+    severity: Severity
+    led_color_code: str
+
+
+class GlobalMaskSettings(BaseModel):
+    brightness_percent: int
+    temperature_celsius: int
+    humidification_frequency_level: int
+    timer_minutes: int
+
+
 class TreatmentControlOptionsResponse(BaseModel):
+    mask_zone_codes: list[str]
     light_color_codes: list[str]
     brightness_percent: NumericControlOption
     temperature_celsius: NumericControlOption
@@ -19,28 +34,15 @@ class TreatmentControlOptionsResponse(BaseModel):
 
 
 class TreatmentControlPresetRequest(BaseModel):
-    assessment_id: str
-    zone_name: str
-
-
-class TreatmentControlValues(BaseModel):
-    light_color_code: str
-    brightness_percent: int
-    temperature_celsius: int
-    humidification_frequency_level: int
-    timer_minutes: int
+    treatment_plan_id: str
 
 
 class TreatmentControlSessionResponse(BaseModel):
     schema_version: str
     execution_channel: str
-    assessment_id: str
-    zone_code: str
-    recommended_issue_category_code: str
-    recommended_severity: Severity
-    recommended_summary_texts: LocalizedText
-    recommended_light_type_code: str
-    recommended_duration_minutes: int
-    recommended_humidification_enabled: bool
-    recommended_notes_texts: LocalizedText
-    control_values: TreatmentControlValues
+    treatment_plan_id: str
+    user_public_id: str
+    overall_severity: Severity
+    summary_texts: LocalizedText
+    global_settings: GlobalMaskSettings
+    zone_led_settings: list[ZoneLedSetting]

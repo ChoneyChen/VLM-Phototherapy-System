@@ -2,6 +2,16 @@
   "contract_name": "treatment_control",
   "version": "1.0",
   "options": {
+    "mask_zone_codes": [
+      "Forehead Zone",
+      "Periorbital Zone",
+      "Nasal Zone",
+      "Left Malar Zone",
+      "Right Malar Zone",
+      "Perioral Zone",
+      "Mandibular/Chin Zone",
+      "Jawline Zone"
+    ],
     "light_color_codes": [
       "red",
       "orange",
@@ -37,29 +47,28 @@
     }
   },
   "control_session": {
-    "schema_version": "treatment_control.v1",
+    "schema_version": "mask_control.v1",
     "execution_channel": "reserved",
-    "assessment_id": "string",
-    "zone_code": "string",
-    "recommended_issue_category_code": "string",
-    "recommended_severity": "low | medium | high",
-    "recommended_summary_texts": {
+    "treatment_plan_id": "string",
+    "user_public_id": "string",
+    "overall_severity": "low | medium | high",
+    "summary_texts": {
       "en": "string",
       "zh": "string"
     },
-    "recommended_light_type_code": "string",
-    "recommended_duration_minutes": 0,
-    "recommended_humidification_enabled": false,
-    "recommended_notes_texts": {
-      "en": "string",
-      "zh": "string"
-    },
-    "control_values": {
-      "light_color_code": "red | orange | yellow | green | cyan | blue | purple",
+    "global_settings": {
       "brightness_percent": 0,
       "temperature_celsius": 0,
       "humidification_frequency_level": 0,
       "timer_minutes": 0
-    }
+    },
+    "zone_led_settings": [
+      {
+        "zone_name": "Forehead Zone",
+        "issue_category_code": "string",
+        "severity": "low | medium | high",
+        "led_color_code": "red | orange | yellow | green | cyan | blue | purple"
+      }
+    ]
   }
 }

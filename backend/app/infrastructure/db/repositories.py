@@ -1,7 +1,13 @@
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload
 
-from app.infrastructure.db.models import SkinAssessmentModel, UserModel, ZoneObservationModel
+from app.infrastructure.db.models import (
+    SkinAssessmentModel,
+    TreatmentPlanModel,
+    TreatmentRecordModel,
+    UserModel,
+    ZoneObservationModel,
+)
 
 
 class UserRepository:
@@ -111,3 +117,110 @@ class AssessmentRepository:
         db.delete(record)
         db.commit()
         return record
+
+
+class TreatmentPlanRepository:
+    def create_plan(
+        self,
+        db: Session,
+        *,
+        plan_id: str,
+        user: UserModel,
+        assessment: SkinAssessmentModel,
+        model_provider: str,
+        payload: dict,
+    ) -> TreatmentPlanModel:
+        record = TreatmentPlanModel(
+            plan_id=plan_id,
+            user_id=user.id,
+            assessment_id=assessment.assessment_id,
+            model_provider=model_provider,
+            overall_severity=payload["overall_severity"],
+            plan_summary=payload["summary_texts"]["en"],
+            raw_payload=payload,
+        )
+        db.add(record)
+        db.commit()
+        return self.get_by_id(db=db, plan_id=plan_id)  # type: ignore[return-value]
+
+    def list_for_user(self, db: Session, user_id: int, limit: int) -> list[TreatmentPlanModel]:
+        statement = (
+            select(TreatmentPlanModel)
+            .where(TreatmentPlanModel.user_id == user_id)
+            .options(
+                joinedload(TreatmentPlanModel.user),
+                joinedload(TreatmentPlanModel.assessment),
+            )
+            .order_by(TreatmentPlanModel.created_at.desc())
+            .limit(limit)
+        )
+        return list(db.scalars(statement).unique())
+
+    def get_by_id(self, db: Session, plan_id: str) -> TreatmentPlanModel | None:
+        statement = (
+            select(TreatmentPlanModel)
+            .where(TreatmentPlanModel.plan_id == plan_id)
+            .options(
+                joinedload(TreatmentPlanModel.user),
+                joinedload(TreatmentPlanModel.assessment),
+                joinedload(TreatmentPlanModel.treatment_records),
+            )
+        )
+        return db.scalar(statement)
+
+
+class TreatmentRecordRepository:
+    def create_record(
+        self,
+        db: Session,
+        *,
+        record_id: str,
+        user: UserModel,
+        treatment_plan: TreatmentPlanModel,
+        status: str,
+        timer_minutes: int,
+        payload: dict,
+    ) -> TreatmentRecordModel:
+        record = TreatmentRecordModel(
+            record_id=record_id,
+            user_id=user.id,
+            treatment_plan_id=treatment_plan.plan_id,
+            status=status,
+            timer_minutes=timer_minutes,
+            raw_payload=payload,
+        )
+        db.add(record)
+        db.commit()
+        return self.get_by_id(db=db, record_id=record_id)  # type: ignore[return-value]
+
+    def list_for_user(self, db: Session, user_id: int, limit: int) -> list[TreatmentRecordModel]:
+        statement = (
+            select(TreatmentRecordModel)
+            .where(TreatmentRecordModel.user_id == user_id)
+            .options(
+                joinedload(TreatmentRecordModel.user),
+                joinedload(TreatmentRecordModel.treatment_plan),
+            )
+            .order_by(TreatmentRecordModel.created_at.desc())
+            .limit(limit)
+        )
+        return list(db.scalars(statement).unique())
+
+    def get_by_id(self, db: Session, record_id: str) -> TreatmentRecordModel | None:
+        statement = (
+            select(TreatmentRecordModel)
+            .where(TreatmentRecordModel.record_id == record_id)
+            .options(
+                joinedload(TreatmentRecordModel.user),
+                joinedload(TreatmentRecordModel.treatment_plan),
+            )
+        )
+        return db.scalar(statement)
+
+    def update_status(self, db: Session, record_id: str, status: str) -> TreatmentRecordModel | None:
+        record = self.get_by_id(db=db, record_id=record_id)
+        if record is None:
+            return None
+        record.status = status
+        db.commit()
+        return self.get_by_id(db=db, record_id=record_id)

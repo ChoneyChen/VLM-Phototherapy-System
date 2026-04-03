@@ -1,0 +1,25 @@
+{
+  "contract_name": "treatment_record",
+  "version": "1.0",
+  "record_contract": {
+    "record_id": "string",
+    "treatment_plan_id": "string",
+    "user_public_id": "string",
+    "status": "running | paused | completed",
+    "timer_minutes": 0,
+    "created_at": "datetime",
+    "updated_at": "datetime",
+    "control_snapshot": {
+      "brightness_percent": 0,
+      "temperature_celsius": 0,
+      "humidification_frequency_level": 0,
+      "timer_minutes": 0,
+      "zone_led_settings": [
+        {
+          "zone_name": "Forehead Zone",
+          "led_color_code": "red | orange | yellow | green | cyan | blue | purple"
+        }
+      ]
+    }
+  }
+}

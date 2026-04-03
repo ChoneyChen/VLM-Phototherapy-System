@@ -43,7 +43,7 @@ export interface HardwareProfile {
   safety_profile: HardwareSafetyProfile;
 }
 
-export interface TreatmentPlan {
+export interface AssessmentTreatmentPlan {
   light_type_code: string;
   temperature_celsius: number;
   duration_minutes: number;
@@ -57,7 +57,7 @@ export interface ZoneAssessment {
   issue_category_code: string;
   severity: Severity;
   summary_texts: LocalizedText;
-  treatment_plan: TreatmentPlan;
+  treatment_plan: AssessmentTreatmentPlan;
 }
 
 export interface AssessmentListItem {
@@ -78,8 +78,7 @@ export interface AssessmentDetail extends AssessmentListItem {
 }
 
 export interface TreatmentControlTarget {
-  assessmentId: string;
-  zoneName: string;
+  treatmentPlanId: string;
 }
 
 export interface NumericControlOption {
@@ -90,6 +89,7 @@ export interface NumericControlOption {
 }
 
 export interface TreatmentControlOptions {
+  mask_zone_codes: string[];
   light_color_codes: LightColorCode[];
   brightness_percent: NumericControlOption;
   temperature_celsius: NumericControlOption;
@@ -97,25 +97,67 @@ export interface TreatmentControlOptions {
   timer_minutes: NumericControlOption;
 }
 
-export interface TreatmentControlValues {
-  light_color_code: LightColorCode;
+export interface GlobalMaskSettings {
   brightness_percent: number;
   temperature_celsius: number;
   humidification_frequency_level: number;
   timer_minutes: number;
 }
 
+export interface TreatmentPlanZone {
+  zone_name: string;
+  issue_category_code: string;
+  severity: Severity;
+  led_color_code: LightColorCode;
+  notes_texts: LocalizedText;
+}
+
+export interface GeneratedTreatmentPlanListItem {
+  id: string;
+  user_public_id: string;
+  assessment_id: string;
+  planner_model_provider: "qwen_plus";
+  overall_severity: Severity;
+  summary_texts: LocalizedText;
+  zones: TreatmentPlanZone[];
+  created_at: string;
+}
+
+export interface GeneratedTreatmentPlanDetail extends GeneratedTreatmentPlanListItem {
+  rationale_texts: LocalizedText;
+  global_settings: GlobalMaskSettings;
+}
+
+export interface ZoneLedSetting {
+  zone_name: string;
+  issue_category_code: string;
+  severity: Severity;
+  led_color_code: LightColorCode;
+}
+
 export interface TreatmentControlSession {
   schema_version: string;
   execution_channel: string;
-  assessment_id: string;
-  zone_code: string;
-  recommended_issue_category_code: string;
-  recommended_severity: Severity;
-  recommended_summary_texts: LocalizedText;
-  recommended_light_type_code: string;
-  recommended_duration_minutes: number;
-  recommended_humidification_enabled: boolean;
-  recommended_notes_texts: LocalizedText;
-  control_values: TreatmentControlValues;
+  treatment_plan_id: string;
+  user_public_id: string;
+  overall_severity: Severity;
+  summary_texts: LocalizedText;
+  global_settings: GlobalMaskSettings;
+  zone_led_settings: ZoneLedSetting[];
+}
+
+export type TreatmentRecordStatus = "running" | "paused" | "completed";
+
+export interface TreatmentRecord {
+  id: string;
+  user_public_id: string;
+  treatment_plan_id: string;
+  plan_summary_texts: LocalizedText;
+  overall_severity: Severity;
+  status: TreatmentRecordStatus;
+  timer_minutes: number;
+  created_at: string;
+  updated_at: string;
+  global_settings: GlobalMaskSettings;
+  zone_led_settings: ZoneLedSetting[];
 }

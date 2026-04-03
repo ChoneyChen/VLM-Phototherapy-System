@@ -1,11 +1,11 @@
-import type { AssessmentDetail, User } from "../shared/types";
+import type { AssessmentDetail, GeneratedTreatmentPlanDetail, User } from "../shared/types";
 import { ArchivePanel } from "../features/archive/ArchivePanel";
 
 interface ArchivePageProps {
   activeUser: User;
   refreshToken: number;
   latestAssessment: AssessmentDetail | null;
-  onTreatAssessment: (assessment: AssessmentDetail) => void;
+  onCreateTreatmentPlan: (assessmentId: string) => Promise<GeneratedTreatmentPlanDetail>;
   onDeleteAssessment: (assessmentId: string) => Promise<void>;
 }
 
@@ -13,7 +13,7 @@ export function ArchivePage({
   activeUser,
   refreshToken,
   latestAssessment,
-  onTreatAssessment,
+  onCreateTreatmentPlan,
   onDeleteAssessment
 }: ArchivePageProps) {
   return (
@@ -21,7 +21,7 @@ export function ArchivePage({
       activeUser={activeUser}
       refreshToken={refreshToken}
       initialAssessment={latestAssessment}
-      onTreatAssessment={onTreatAssessment}
+      onCreateTreatmentPlan={onCreateTreatmentPlan}
       onDeleteAssessment={onDeleteAssessment}
     />
   );

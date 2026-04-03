@@ -2,9 +2,14 @@ import type {
   AppLanguage,
   AssessmentDetail,
   AssessmentListItem,
+  GeneratedTreatmentPlanDetail,
+  GeneratedTreatmentPlanListItem,
   Provider,
+  TreatmentRecord,
+  TreatmentRecordStatus,
   TreatmentControlOptions,
   TreatmentControlSession,
+  ZoneLedSetting,
   User
 } from "../types";
 
@@ -59,21 +64,68 @@ export function deleteAssessment(assessmentId: string): Promise<void> {
   });
 }
 
+export function listTreatmentPlans(userPublicId: string): Promise<GeneratedTreatmentPlanListItem[]> {
+  return request<GeneratedTreatmentPlanListItem[]>(`/treatment-plans?user_public_id=${encodeURIComponent(userPublicId)}`);
+}
+
+export function getTreatmentPlan(planId: string): Promise<GeneratedTreatmentPlanDetail> {
+  return request<GeneratedTreatmentPlanDetail>(`/treatment-plans/${planId}`);
+}
+
+export function createTreatmentPlan(assessmentId: string): Promise<GeneratedTreatmentPlanDetail> {
+  return request<GeneratedTreatmentPlanDetail>("/treatment-plans", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ assessment_id: assessmentId })
+  });
+}
+
 export function getTreatmentControlOptions(): Promise<TreatmentControlOptions> {
   return request<TreatmentControlOptions>("/treatment-control/options");
 }
 
 export function createTreatmentControlPreset(payload: {
-  assessmentId: string;
-  zoneName: string;
+  treatmentPlanId: string;
 }): Promise<TreatmentControlSession> {
   return request<TreatmentControlSession>("/treatment-control/preset", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      assessment_id: payload.assessmentId,
-      zone_name: payload.zoneName
+      treatment_plan_id: payload.treatmentPlanId
     })
+  });
+}
+
+export function listTreatmentRecords(userPublicId: string): Promise<TreatmentRecord[]> {
+  return request<TreatmentRecord[]>(`/treatment-records?user_public_id=${encodeURIComponent(userPublicId)}`);
+}
+
+export function createTreatmentRecord(payload: {
+  treatmentPlanId: string;
+  globalSettings: {
+    brightness_percent: number;
+    temperature_celsius: number;
+    humidification_frequency_level: number;
+    timer_minutes: number;
+  };
+  zoneLedSettings: ZoneLedSetting[];
+}): Promise<TreatmentRecord> {
+  return request<TreatmentRecord>("/treatment-records", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      treatment_plan_id: payload.treatmentPlanId,
+      global_settings: payload.globalSettings,
+      zone_led_settings: payload.zoneLedSettings
+    })
+  });
+}
+
+export function updateTreatmentRecordStatus(recordId: string, status: TreatmentRecordStatus): Promise<TreatmentRecord> {
+  return request<TreatmentRecord>(`/treatment-records/${recordId}/status`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status })
   });
 }
 

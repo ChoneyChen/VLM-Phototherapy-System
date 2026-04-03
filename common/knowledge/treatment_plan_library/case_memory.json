@@ -1,0 +1,28 @@
+{
+  "description": "Editable treatment plan case memory for qwen-plus plan generation.",
+  "cases": [
+    {
+      "case_id": "CASE-001",
+      "scenario": "Example placeholder only",
+      "notes": "Replace this with a real clinician-reviewed example.",
+      "assessment_pattern": {
+        "overall_severity": "medium",
+        "issues": ["dehydration", "barrier_sensitivity"]
+      },
+      "mask_recommendation": {
+        "global_settings": {
+          "brightness_percent": 55,
+          "temperature_celsius": 32,
+          "humidification_frequency_level": 60,
+          "timer_minutes": 12
+        },
+        "zone_led_settings": [
+          {
+            "zone_name": "Forehead Zone",
+            "led_color_code": "cyan"
+          }
+        ]
+      }
+    }
+  ]
+}

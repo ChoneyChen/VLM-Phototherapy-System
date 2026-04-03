@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { createAssessment, createUser, deleteAssessment, deleteUser, listUsers } from "../shared/api/client";
-import type { AssessmentDetail, Provider, TreatmentControlTarget, User } from "../shared/types";
+import { createAssessment, createTreatmentPlan, createUser, deleteAssessment, deleteUser, listUsers } from "../shared/api/client";
+import type { AssessmentDetail, GeneratedTreatmentPlanDetail, Provider, User } from "../shared/types";
 import { AppShell } from "../shared/components/AppShell";
 import { UserGate } from "../features/users/UserGate";
 import { AssessmentPage } from "../pages/AssessmentPage";
 import { ArchivePage } from "../pages/ArchivePage";
 import { TreatmentPage } from "../pages/TreatmentPage";
 import { TreatmentControlPage } from "../pages/TreatmentControlPage";
+import { TreatmentRecordsPage } from "../pages/TreatmentRecordsPage";
 import { UsersPage } from "../pages/UsersPage";
 import { useI18n } from "../shared/i18n";
 
@@ -19,9 +20,10 @@ export default function App() {
   const [activeUser, setActiveUser] = useState<User | null>(null);
   const [showUserGate, setShowUserGate] = useState(false);
   const [latestAssessment, setLatestAssessment] = useState<AssessmentDetail | null>(null);
-  const [treatmentAssessment, setTreatmentAssessment] = useState<AssessmentDetail | null>(null);
-  const [controlTarget, setControlTarget] = useState<TreatmentControlTarget | null>(null);
+  const [selectedTreatmentPlan, setSelectedTreatmentPlan] = useState<GeneratedTreatmentPlanDetail | null>(null);
   const [archiveRefreshToken, setArchiveRefreshToken] = useState(0);
+  const [planRefreshToken, setPlanRefreshToken] = useState(0);
+  const [recordRefreshToken, setRecordRefreshToken] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -62,8 +64,7 @@ export default function App() {
     window.localStorage.setItem(ACTIVE_USER_STORAGE_KEY, user.public_id);
     if (isSwitchingSubject) {
       setLatestAssessment(null);
-      setTreatmentAssessment(null);
-      setControlTarget(null);
+      setSelectedTreatmentPlan(null);
     }
   }
 
@@ -93,8 +94,6 @@ export default function App() {
         image: payload.image
       });
       setLatestAssessment(assessment);
-      setTreatmentAssessment(assessment);
-      setControlTarget(null);
       setArchiveRefreshToken((value) => value + 1);
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : t("genericError"));
@@ -103,17 +102,19 @@ export default function App() {
     }
   }
 
-  function handleSelectTreatmentAssessment(assessment: AssessmentDetail) {
-    setTreatmentAssessment(assessment);
-    setControlTarget(null);
+  async function handleCreateTreatmentPlan(assessmentId: string) {
+    const plan = await createTreatmentPlan(assessmentId);
+    setSelectedTreatmentPlan(plan);
+    setPlanRefreshToken((value) => value + 1);
+    return plan;
   }
 
-  function handleOpenTreatmentControl(assessment: AssessmentDetail, zoneName: string) {
-    setTreatmentAssessment(assessment);
-    setControlTarget({
-      assessmentId: assessment.id,
-      zoneName
-    });
+  function handleSelectTreatmentPlan(plan: GeneratedTreatmentPlanDetail) {
+    setSelectedTreatmentPlan(plan);
+  }
+
+  function handleRecordMutated() {
+    setRecordRefreshToken((value) => value + 1);
   }
 
   async function handleDeleteUser(user: User) {
@@ -135,12 +136,8 @@ export default function App() {
       setLatestAssessment(null);
     }
 
-    if (treatmentAssessment?.user_public_id === user.public_id) {
-      setTreatmentAssessment(null);
-    }
-
-    if (controlTarget && (treatmentAssessment?.user_public_id === user.public_id || latestAssessment?.user_public_id === user.public_id)) {
-      setControlTarget(null);
+    if (selectedTreatmentPlan?.user_public_id === user.public_id) {
+      setSelectedTreatmentPlan(null);
     }
   }
 
@@ -151,20 +148,17 @@ export default function App() {
       setLatestAssessment(null);
     }
 
-    if (treatmentAssessment?.id === assessmentId) {
-      setTreatmentAssessment(null);
-    }
-
-    if (controlTarget?.assessmentId === assessmentId) {
-      setControlTarget(null);
+    if (selectedTreatmentPlan?.assessment_id === assessmentId) {
+      setSelectedTreatmentPlan(null);
     }
 
     setArchiveRefreshToken((value) => value + 1);
+    setPlanRefreshToken((value) => value + 1);
   }
 
   return (
     <>
-      <AppShell activeUser={activeUser} onOpenUserGate={() => setShowUserGate(true)}>
+      <AppShell>
         <header className="page-hero">
           <span className="eyebrow">{t("heroEyebrow")}</span>
           <h2>{activeUserLabel}</h2>
@@ -192,7 +186,7 @@ export default function App() {
                   activeUser={activeUser}
                   refreshToken={archiveRefreshToken}
                   latestAssessment={latestAssessment}
-                  onTreatAssessment={handleSelectTreatmentAssessment}
+                  onCreateTreatmentPlan={handleCreateTreatmentPlan}
                   onDeleteAssessment={handleDeleteAssessment}
                 />
               }
@@ -202,8 +196,9 @@ export default function App() {
               element={
                 <TreatmentPage
                   activeUser={activeUser}
-                  assessment={treatmentAssessment ?? latestAssessment}
-                  onOpenControl={handleOpenTreatmentControl}
+                  refreshToken={planRefreshToken}
+                  selectedPlan={selectedTreatmentPlan}
+                  onSelectPlan={handleSelectTreatmentPlan}
                 />
               }
             />
@@ -212,9 +207,17 @@ export default function App() {
               element={
                 <TreatmentControlPage
                   activeUser={activeUser}
-                  assessment={treatmentAssessment ?? latestAssessment}
-                  controlTarget={controlTarget}
-                  onSelectZone={handleOpenTreatmentControl}
+                  treatmentPlan={selectedTreatmentPlan}
+                  onRecordMutated={handleRecordMutated}
+                />
+              }
+            />
+            <Route
+              path="/records"
+              element={
+                <TreatmentRecordsPage
+                  activeUser={activeUser}
+                  refreshToken={recordRefreshToken}
                 />
               }
             />

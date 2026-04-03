@@ -1,11 +1,8 @@
 import { NavLink } from "react-router-dom";
 import type { ReactNode } from "react";
-import type { User } from "../types";
 import { useI18n } from "../i18n";
 
 interface AppShellProps {
-  activeUser: User | null;
-  onOpenUserGate: () => void;
   children: ReactNode;
 }
 
@@ -14,10 +11,11 @@ const navigation = [
   { to: "/archive", labelKey: "navArchive", eyebrow: "Archive" },
   { to: "/treatment", labelKey: "navTreatment", eyebrow: "Treatment" },
   { to: "/control", labelKey: "navControl", eyebrow: "Control" },
+  { to: "/records", labelKey: "navRecords", eyebrow: "Records" },
   { to: "/users", labelKey: "navUsers", eyebrow: "Users" }
 ] as const;
 
-export function AppShell({ activeUser, onOpenUserGate, children }: AppShellProps) {
+export function AppShell({ children }: AppShellProps) {
   const { language, setLanguage, t } = useI18n();
 
   return (
@@ -61,12 +59,6 @@ export function AppShell({ activeUser, onOpenUserGate, children }: AppShellProps
             </button>
           </div>
         </div>
-
-        <button className="user-summary" type="button" onClick={onOpenUserGate}>
-          <span className="eyebrow">{t("activeSubject")}</span>
-          <strong>{activeUser ? activeUser.name : t("selectUser")}</strong>
-          <span>{activeUser ? activeUser.public_id : t("bindUserFirst")}</span>
-        </button>
       </aside>
 
       <main className="content">{children}</main>

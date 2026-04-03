@@ -28,8 +28,7 @@ def create_treatment_control_preset(
     try:
         return treatment_control_service.build_control_session(
             db=db,
-            assessment_id=payload.assessment_id,
-            zone_name=payload.zone_name,
+            treatment_plan_id=payload.treatment_plan_id,
         )
     except LookupError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc

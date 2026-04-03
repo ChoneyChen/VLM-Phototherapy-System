@@ -25,6 +25,14 @@ class UserModel(Base):
         back_populates="user",
         cascade="all, delete-orphan",
     )
+    treatment_plans: Mapped[list["TreatmentPlanModel"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    treatment_records: Mapped[list["TreatmentRecordModel"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
 
 
 class SkinAssessmentModel(Base):
@@ -46,6 +54,10 @@ class SkinAssessmentModel(Base):
         cascade="all, delete-orphan",
         order_by="ZoneObservationModel.display_order",
     )
+    treatment_plans: Mapped[list["TreatmentPlanModel"]] = relationship(
+        back_populates="assessment",
+        cascade="all, delete-orphan",
+    )
 
 
 class ZoneObservationModel(Base):
@@ -65,3 +77,43 @@ class ZoneObservationModel(Base):
     treatment_notes: Mapped[str] = mapped_column(Text, nullable=False)
 
     assessment: Mapped[SkinAssessmentModel] = relationship(back_populates="zones")
+
+
+class TreatmentPlanModel(Base):
+    __tablename__ = "treatment_plans"
+
+    plan_id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    assessment_id: Mapped[str] = mapped_column(ForeignKey("skin_assessments.assessment_id"), nullable=False, index=True)
+    model_provider: Mapped[str] = mapped_column(String(32), nullable=False)
+    overall_severity: Mapped[str] = mapped_column(String(16), nullable=False)
+    plan_summary: Mapped[str] = mapped_column(Text, nullable=False)
+    raw_payload: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC), index=True)
+
+    user: Mapped[UserModel] = relationship(back_populates="treatment_plans")
+    assessment: Mapped[SkinAssessmentModel] = relationship(back_populates="treatment_plans")
+    treatment_records: Mapped[list["TreatmentRecordModel"]] = relationship(
+        back_populates="treatment_plan",
+        cascade="all, delete-orphan",
+    )
+
+
+class TreatmentRecordModel(Base):
+    __tablename__ = "treatment_records"
+
+    record_id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    treatment_plan_id: Mapped[str] = mapped_column(ForeignKey("treatment_plans.plan_id"), nullable=False, index=True)
+    status: Mapped[str] = mapped_column(String(16), nullable=False)
+    timer_minutes: Mapped[int] = mapped_column(Integer, nullable=False)
+    raw_payload: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC), index=True)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
+    )
+
+    user: Mapped[UserModel] = relationship(back_populates="treatment_records")
+    treatment_plan: Mapped[TreatmentPlanModel] = relationship(back_populates="treatment_records")

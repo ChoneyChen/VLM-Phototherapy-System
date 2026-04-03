@@ -1,0 +1,43 @@
+{
+  "device_name": "Intelligent Phototherapy Mask",
+  "version": "placeholder-1.0",
+  "control_capabilities": {
+    "zone_led_color_control": true,
+    "global_brightness_control": true,
+    "global_temperature_control": true,
+    "global_humidification_frequency_control": true,
+    "global_timer_control": true
+  },
+  "default_ranges": {
+    "brightness_percent": {
+      "min": 0,
+      "max": 100,
+      "step": 1
+    },
+    "temperature_celsius": {
+      "min": 20,
+      "max": 40,
+      "step": 1
+    },
+    "humidification_frequency_level": {
+      "min": 0,
+      "max": 100,
+      "step": 1
+    },
+    "timer_minutes": {
+      "min": 1,
+      "max": 60,
+      "step": 1
+    }
+  },
+  "zone_codes": [
+    "Forehead Zone",
+    "Periorbital Zone",
+    "Nasal Zone",
+    "Left Malar Zone",
+    "Right Malar Zone",
+    "Perioral Zone",
+    "Mandibular/Chin Zone",
+    "Jawline Zone"
+  ]
+}

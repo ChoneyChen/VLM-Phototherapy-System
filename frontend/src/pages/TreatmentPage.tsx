@@ -1,34 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { AssessmentDetail, User } from "../shared/types";
+import { getTreatmentPlan, listTreatmentPlans } from "../shared/api/client";
+import type { GeneratedTreatmentPlanDetail, GeneratedTreatmentPlanListItem, User } from "../shared/types";
 import { useI18n } from "../shared/i18n";
 
 interface TreatmentPageProps {
   activeUser: User;
-  assessment: AssessmentDetail | null;
-  onOpenControl: (assessment: AssessmentDetail, zoneName: string) => void;
+  refreshToken: number;
+  selectedPlan: GeneratedTreatmentPlanDetail | null;
+  onSelectPlan: (plan: GeneratedTreatmentPlanDetail) => void;
 }
 
-export function TreatmentPage({ activeUser, assessment, onOpenControl }: TreatmentPageProps) {
+export function TreatmentPage({ activeUser, refreshToken, selectedPlan, onSelectPlan }: TreatmentPageProps) {
   const navigate = useNavigate();
-  const { labelBoolean, labelIssue, labelLight, labelSeverity, labelZone, pickText, t } = useI18n();
-  const [filter, setFilter] = useState<"all" | "nonLow" | "highOnly">("all");
-  const visibleZones =
-    assessment?.zones.filter((zone) => {
-      if (filter === "highOnly") {
-        return zone.severity === "high";
-      }
-      if (filter === "nonLow") {
-        return zone.severity !== "low";
-      }
-      return true;
-    }) ?? [];
+  const { labelIssue, labelSeverity, labelZone, pickText, t, language } = useI18n();
+  const [plans, setPlans] = useState<GeneratedTreatmentPlanListItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  function handleOpenZoneControl(zoneName: string) {
-    if (!assessment) {
-      return;
+  useEffect(() => {
+    async function loadPlans() {
+      setLoading(true);
+      try {
+        const items = await listTreatmentPlans(activeUser.public_id);
+        setPlans(items);
+      } finally {
+        setLoading(false);
+      }
     }
-    onOpenControl(assessment, zoneName);
+
+    void loadPlans();
+  }, [activeUser.public_id, refreshToken]);
+
+  async function handleOpenControl(planId: string) {
+    const detail = selectedPlan?.id === planId ? selectedPlan : await getTreatmentPlan(planId);
+    onSelectPlan(detail);
     navigate("/control");
   }
 
@@ -38,103 +43,63 @@ export function TreatmentPage({ activeUser, assessment, onOpenControl }: Treatme
         <div>
           <span className="eyebrow">{t("treatmentWorkspace")}</span>
           <h2>{t("treatmentTitle")}</h2>
+          <p className="muted">{t("treatmentPlansPageDescription")}</p>
         </div>
         <div className="badge">{activeUser.public_id}</div>
       </div>
 
-      {assessment ? (
-        <>
-          <div className="filter-row">
-            <span className="eyebrow">{t("treatmentFilter")}</span>
-            <div className="filter-pills">
-              <button type="button" className={`filter-pill ${filter === "all" ? "active" : ""}`} onClick={() => setFilter("all")}>
-                {t("showAll")}
-              </button>
-              <button
-                type="button"
-                className={`filter-pill ${filter === "nonLow" ? "active" : ""}`}
-                onClick={() => setFilter("nonLow")}
-              >
-                {t("showNonLow")}
-              </button>
-              <button
-                type="button"
-                className={`filter-pill ${filter === "highOnly" ? "active" : ""}`}
-                onClick={() => setFilter("highOnly")}
-              >
-                {t("showHighOnly")}
-              </button>
-            </div>
-          </div>
-
-          {visibleZones.length > 0 ? (
-            <div className="zone-grid compact">
-              {visibleZones.map((zone) => (
-                <button
-                  key={zone.zone_name}
-                  type="button"
-                  className="treatment-plan-card"
-                  onClick={() => handleOpenZoneControl(zone.zone_name)}
-                >
-                  <div className="plan-card-head">
-                    <div>
-                      <span className="eyebrow">{labelZone(zone.zone_name)}</span>
-                      <strong>{labelIssue(zone.issue_category_code)}</strong>
-                    </div>
-                    <span className={`severity-pill ${zone.severity}`}>{labelSeverity(zone.severity)}</span>
-                  </div>
-
-                  <div className="plan-card-body">
-                    <div className="plan-row">
-                      <span className="plan-row-label">{t("problem")}</span>
-                      <strong>{labelIssue(zone.issue_category_code)}</strong>
-                    </div>
-                    <div className="plan-row">
-                      <span className="plan-row-label">{t("treatmentRecommendation")}</span>
-                      <div className="plan-meta-grid">
-                        <div className="plan-meta-item">
-                          <span className="plan-row-label">{t("lightType")}</span>
-                          <strong>{labelLight(zone.treatment_plan.light_type_code)}</strong>
-                        </div>
-                        <div className="plan-meta-item">
-                          <span className="plan-row-label">{t("temperature")}</span>
-                          <strong>{zone.treatment_plan.temperature_celsius}°C</strong>
-                        </div>
-                        <div className="plan-meta-item">
-                          <span className="plan-row-label">{t("duration")}</span>
-                          <strong>{zone.treatment_plan.duration_minutes} min</strong>
-                        </div>
-                        <div className="plan-meta-item">
-                          <span className="plan-row-label">{t("humidification")}</span>
-                          <strong>{labelBoolean(zone.treatment_plan.humidification_enabled)}</strong>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="plan-row">
-                      <span className="plan-row-label">{t("notes")}</span>
-                      <p>{pickText(zone.treatment_plan.notes_texts)}</p>
-                    </div>
-                  </div>
-
-                  <div className="plan-card-footer">
-                    <span>{t("openControl")}</span>
-                    <span aria-hidden="true">+</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          ) : (
-            <p className="muted">{t("noMatchingPlans")}</p>
-          )}
-        </>
+      {loading ? (
+        <p className="muted">{t("loadingTreatmentPlans")}</p>
+      ) : plans.length === 0 ? (
+        <div className="notice-card">
+          <strong>{t("noTreatmentPlansYet")}</strong>
+          <p>{t("noTreatmentPlansDescription")}</p>
+        </div>
       ) : (
-        <p className="muted">{t("completeAssessmentFirst")}</p>
-      )}
+        <div className="treatment-plan-list">
+          {plans.map((plan) => (
+            <button
+              key={plan.id}
+              type="button"
+              className={`treatment-summary-card ${selectedPlan?.id === plan.id ? "active" : ""}`}
+              onClick={() => void handleOpenControl(plan.id)}
+            >
+              <div className="plan-card-head">
+                <div>
+                  <span className="eyebrow">
+                    {new Date(plan.created_at).toLocaleString(language === "zh" ? "zh-CN" : "en-US")}
+                  </span>
+                  <strong>{pickText(plan.summary_texts)}</strong>
+                </div>
+                <span className={`severity-pill ${plan.overall_severity}`}>{labelSeverity(plan.overall_severity)}</span>
+              </div>
 
-      <div className="notice-card">
-        <strong>{t("hardwareReserve")}</strong>
-        <p>{t("hardwareReserveDescription")}</p>
-      </div>
+              <div className="plan-row">
+                <span className="plan-row-label">{t("planSourceAssessment")}</span>
+                <strong>{plan.assessment_id}</strong>
+              </div>
+
+              <div className="plan-row">
+                <span className="plan-row-label">{t("zonesAndIssues")}</span>
+                <div className="zone-issue-list">
+                  {plan.zones.map((zone) => (
+                    <div key={`${plan.id}-${zone.zone_name}`} className="zone-issue-item">
+                      <strong>{labelZone(zone.zone_name)}</strong>
+                      <span>
+                        {labelIssue(zone.issue_category_code)} · {labelSeverity(zone.severity)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="plan-card-footer">
+                <span>{t("openControl")}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

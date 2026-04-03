@@ -21,8 +21,10 @@ class MockHardwareController(HardwareController):
     def apply_zone_command(self, command: PhototherapyCommand) -> None:
         self.last_command["zone_command"] = command.model_dump()
 
-    def set_light_color(self, light_color_code: str) -> None:
-        self.last_command["light_color_code"] = light_color_code
+    def set_zone_led_color(self, zone_name: str, light_color_code: str) -> None:
+        zone_settings = self.last_command.setdefault("zone_led_settings", {})
+        if isinstance(zone_settings, dict):
+            zone_settings[zone_name] = light_color_code
 
     def set_brightness(self, brightness_percent: int) -> None:
         self.last_command["brightness_percent"] = brightness_percent

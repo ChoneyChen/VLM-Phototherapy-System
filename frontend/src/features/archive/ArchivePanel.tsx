@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildImageUrl, getAssessment, listAssessments } from "../../shared/api/client";
 import { useI18n } from "../../shared/i18n";
-import type { AssessmentDetail, AssessmentListItem, User } from "../../shared/types";
+import type { AssessmentDetail, AssessmentListItem, GeneratedTreatmentPlanDetail, User } from "../../shared/types";
 
 interface ArchivePanelProps {
   activeUser: User;
   refreshToken: number;
   initialAssessment: AssessmentDetail | null;
-  onTreatAssessment: (assessment: AssessmentDetail) => void;
+  onCreateTreatmentPlan: (assessmentId: string) => Promise<GeneratedTreatmentPlanDetail>;
   onDeleteAssessment: (assessmentId: string) => Promise<void>;
 }
 
@@ -16,7 +16,7 @@ export function ArchivePanel({
   activeUser,
   refreshToken,
   initialAssessment,
-  onTreatAssessment,
+  onCreateTreatmentPlan,
   onDeleteAssessment
 }: ArchivePanelProps) {
   const { labelIssue, labelSeverity, labelZone, pickText, t, language } = useI18n();
@@ -25,6 +25,30 @@ export function ArchivePanel({
   const [selected, setSelected] = useState<AssessmentDetail | null>(initialAssessment);
   const [loading, setLoading] = useState(true);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+  const [planProgressValue, setPlanProgressValue] = useState(0);
+  const [planError, setPlanError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isGeneratingPlan) {
+      setPlanProgressValue(0);
+      return;
+    }
+
+    setPlanProgressValue(10);
+    const timer = window.setInterval(() => {
+      setPlanProgressValue((current) => {
+        if (current >= 90) {
+          return current;
+        }
+        return Math.min(90, current + Math.floor(Math.random() * 9) + 4);
+      });
+    }, 220);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [isGeneratingPlan]);
 
   useEffect(() => {
     async function loadHistory() {
@@ -56,12 +80,23 @@ export function ArchivePanel({
     setOpenMenuId(null);
   }
 
-  async function handleTreat(item: AssessmentListItem) {
+  async function handleGeneratePlan(item: AssessmentListItem) {
     const detail = await getAssessment(item.id);
     setSelected(detail);
-    onTreatAssessment(detail);
     setOpenMenuId(null);
-    navigate("/treatment");
+    setPlanError(null);
+    setIsGeneratingPlan(true);
+    try {
+      await onCreateTreatmentPlan(item.id);
+      setPlanProgressValue(100);
+      navigate("/treatment");
+    } catch (error) {
+      setPlanError(error instanceof Error ? error.message : t("genericError"));
+    } finally {
+      window.setTimeout(() => {
+        setIsGeneratingPlan(false);
+      }, 280);
+    }
   }
 
   async function handleDelete(item: AssessmentListItem) {
@@ -96,6 +131,8 @@ export function ArchivePanel({
           <div className="badge">{activeUser.name}</div>
         </div>
 
+        {planError ? <p className="error-text">{planError}</p> : null}
+
         {loading ? (
           <p className="muted">{t("loadingArchive")}</p>
         ) : history.length === 0 ? (
@@ -120,8 +157,8 @@ export function ArchivePanel({
 
                 {openMenuId === item.id ? (
                   <div className="context-menu">
-                    <button type="button" className="context-menu-item" onClick={() => void handleTreat(item)}>
-                      {t("treatThisRecord")}
+                    <button type="button" className="context-menu-item" onClick={() => void handleGeneratePlan(item)}>
+                      {t("generateTreatmentPlanAction")}
                     </button>
                     <button type="button" className="context-menu-item danger" onClick={() => void handleDelete(item)}>
                       {t("deleteRecordAction")}
@@ -163,6 +200,25 @@ export function ArchivePanel({
           <p className="muted">{t("selectHistory")}</p>
         )}
       </section>
+
+      {isGeneratingPlan ? (
+        <div className="camera-modal-backdrop visible">
+          <div className="camera-modal visible plan-progress-modal">
+            <span className="eyebrow">{t("planGenerationProgress")}</span>
+            <div
+              className="progress-ring"
+              style={{
+                background: `conic-gradient(#c9672d ${planProgressValue * 3.6}deg, rgba(201, 103, 45, 0.12) 0deg)`
+              }}
+            >
+              <div className="progress-ring-inner">
+                <strong>{planProgressValue}%</strong>
+              </div>
+            </div>
+            <p className="muted">{t("planGenerationProgressDescription")}</p>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

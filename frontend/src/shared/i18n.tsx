@@ -7,6 +7,7 @@ type MessageKey =
   | "navArchive"
   | "navTreatment"
   | "navControl"
+  | "navRecords"
   | "navUsers"
   | "activeSubject"
   | "selectUser"
@@ -60,7 +61,15 @@ type MessageKey =
   | "selectHistory"
   | "treatmentWorkspace"
   | "treatmentTitle"
-  | "completeAssessmentFirst"
+  | "treatmentPlansPageDescription"
+  | "loadingTreatmentPlans"
+  | "noTreatmentPlansYet"
+  | "noTreatmentPlansDescription"
+  | "planSourceAssessment"
+  | "zonesAndIssues"
+  | "generateTreatmentPlanAction"
+  | "planGenerationProgress"
+  | "planGenerationProgressDescription"
   | "hardwareReserve"
   | "hardwareReserveDescription"
   | "hardwareCommandSchema"
@@ -69,6 +78,7 @@ type MessageKey =
   | "controlWorkspace"
   | "controlTitle"
   | "controlDescription"
+  | "maskControlDescription"
   | "selectPlanToControl"
   | "pickZoneToControl"
   | "goToTreatmentPlans"
@@ -77,6 +87,7 @@ type MessageKey =
   | "recommendedSummary"
   | "controlValues"
   | "lightColor"
+  | "zoneLedColor"
   | "brightness"
   | "humidificationFrequency"
   | "timer"
@@ -85,6 +96,25 @@ type MessageKey =
   | "deviceBindingReservedDescription"
   | "controlLoading"
   | "openControl"
+  | "globalTreatmentControls"
+  | "maskFaceMap"
+  | "selectedZone"
+  | "startTreatment"
+  | "resumeTreatment"
+  | "pauseTreatment"
+  | "recordsTitle"
+  | "recordsDescription"
+  | "loadingRecords"
+  | "noTreatmentRecordsYet"
+  | "noTreatmentRecordsDescription"
+  | "recordStartedAt"
+  | "recordUpdatedAt"
+  | "recordDuration"
+  | "recordLinkedPlan"
+  | "recordStatus"
+  | "recordStatusRunning"
+  | "recordStatusPaused"
+  | "recordStatusCompleted"
   | "roster"
   | "userManagement"
   | "create"
@@ -115,22 +145,26 @@ const LANGUAGE_STORAGE_KEY = "vlm-phototherapy-language";
 
 const messages: Record<AppLanguage, Record<MessageKey, string>> = {
   en: {
-    brandDescription: "Cloud vision analysis, daily archive tracking, and hardware-ready phototherapy orchestration.",
+    brandDescription:
+      "Cloud vision analysis, archive-driven treatment planning, and hardware-ready smart mask control.",
     navAssessment: "Face Assessment",
     navArchive: "Face Archive",
     navTreatment: "Treatment Plan",
     navControl: "Treatment Control",
+    navRecords: "Treatment Records",
     navUsers: "Users",
     activeSubject: "Active Subject",
     selectUser: "Select or create a user",
     bindUserFirst: "Bind a subject profile before entering the workflow.",
     language: "Language",
     heroEyebrow: "Production Workspace",
-    heroDelivered: "Delivered in this phase: multi-user entry, face assessment, daily image archive, treatment planning, and reserved control console.",
+    heroDelivered:
+      "Delivered in this phase: multi-user entry, face assessment, daily archive, archive-triggered treatment plans, smart mask control, and treatment records.",
     waitingUser: "Waiting for user selection",
     waitingUserDescription: "Choose or create a subject profile before entering the workspace.",
     entryGateTitle: "Choose a subject before entering the assessment workflow",
-    entryGateDescription: "Each subject receives an independent business ID and a separate daily skin-state archive.",
+    entryGateDescription:
+      "Each subject receives an independent business ID and a separate daily skin-state archive.",
     selectExistingUser: "Select an existing user",
     noUserYet: "No subject profile exists yet. Create the first one to continue.",
     createNewUser: "Create a new user",
@@ -144,7 +178,8 @@ const messages: Record<AppLanguage, Record<MessageKey, string>> = {
     uploadImageHint: "Use JPEG, PNG, or WEBP.",
     cameraCapture: "Camera Capture",
     cameraModalTitle: "Camera capture",
-    cameraModalDescription: "Open a compact live preview window, align the face, and capture directly into the assessment form.",
+    cameraModalDescription:
+      "Open a compact live preview window, align the face, and capture directly into the assessment form.",
     openCamera: "Open camera",
     capturePhoto: "Capture photo",
     close: "Close",
@@ -153,51 +188,90 @@ const messages: Record<AppLanguage, Record<MessageKey, string>> = {
     cameraReady: "Camera preview is ready.",
     capturedPhoto: "Captured photo attached",
     supplementNotes: "Supplement notes",
-    supplementPlaceholder: "For example: morning natural light, no makeup, 10 minutes after cleansing.",
+    supplementPlaceholder:
+      "For example: morning natural light, no makeup, 10 minutes after cleansing.",
     submitAssessment: "Run assessment and archive",
     submittingAssessment: "Assessing...",
     waitingAssessment: "Waiting for the first analysis",
-    waitingAssessmentDescription: "Once an image is submitted, the overall condition, regional concerns, and treatment plan will appear here.",
+    waitingAssessmentDescription:
+      "Once an image is submitted, the overall condition, regional concerns, and assessment-time guidance will appear here.",
     todayAnalysis: "Today's Analysis",
-    treatmentRecommendation: "Treatment recommendation",
+    treatmentRecommendation: "Assessment-time guidance",
     lightType: "Light type",
     temperature: "Temperature",
     duration: "Duration",
     humidification: "Humidification",
     hardwarePayload: "Hardware payload",
-    history: "History",
+    history: "Archive History",
     archiveTitle: "Face Archive",
     loadingArchive: "Loading archive...",
     emptyArchive: "This user does not have any assessment records yet.",
-    recordDetail: "Record detail",
+    recordDetail: "Assessment detail",
     selectHistory: "Select a history entry to view the detailed record.",
     treatmentWorkspace: "Treatment Workspace",
-    treatmentTitle: "Treatment Plan",
-    completeAssessmentFirst: "Complete one assessment first to review the regional plan.",
+    treatmentTitle: "Treatment Plans",
+    treatmentPlansPageDescription:
+      "Treatment plans are generated from archived assessments. Each card summarizes severity and zone-level concerns for one saved facial record.",
+    loadingTreatmentPlans: "Loading treatment plans...",
+    noTreatmentPlansYet: "No treatment plan has been generated yet.",
+    noTreatmentPlansDescription:
+      "Open Face Archive and use Generate Treatment Plan on an archived assessment to create the first smart-mask plan.",
+    planSourceAssessment: "Source assessment",
+    zonesAndIssues: "Severity, zones, and issues",
+    generateTreatmentPlanAction: "Generate treatment plan",
+    planGenerationProgress: "Generating treatment plan",
+    planGenerationProgressDescription:
+      "The system is creating a structured smart-mask plan from the archived facial assessment and clinical library.",
     hardwareReserve: "Hardware interface reservation",
-    hardwareReserveDescription: "These treatment parameters already follow a device-ready command structure for future control of light spectrum, temperature, humidification, and runtime.",
+    hardwareReserveDescription:
+      "These treatment parameters already follow a device-ready command structure for future control of light spectrum, temperature, humidification, and runtime.",
     hardwareCommandSchema: "Command schema",
     executionChannel: "Execution channel",
     safetyRange: "Safety range",
     controlWorkspace: "Control Workspace",
     controlTitle: "Treatment Control",
     controlDescription: "A structured device-control console derived from the selected treatment plan.",
-    selectPlanToControl: "Choose a treatment plan card or zone to preload the control console.",
-    pickZoneToControl: "Pick a zone to enter direct control",
-    goToTreatmentPlans: "Complete an assessment first, or open the treatment page to choose a zone preset.",
-    recommendedPlan: "Recommended plan",
+    maskControlDescription:
+      "Smart mask control separates per-zone LED color from global heating, humidification, brightness, and timer settings.",
+    selectPlanToControl: "Choose a treatment plan to load the smart mask control workspace.",
+    pickZoneToControl: "Pick a facial zone to edit its LED color.",
+    goToTreatmentPlans: "Open Treatment Plans and select one plan card to continue.",
+    recommendedPlan: "Selected plan",
     recommendedIssue: "Issue",
-    recommendedSummary: "Clinical summary",
+    recommendedSummary: "Clinical rationale",
     controlValues: "Control values",
     lightColor: "Light color",
+    zoneLedColor: "Zone LED color",
     brightness: "Brightness",
     humidificationFrequency: "Humidification frequency",
     timer: "Timer",
     commandPreview: "Command preview",
     deviceBindingReserved: "Device binding reserved",
-    deviceBindingReservedDescription: "This console edits a reserved control session only. Physical execution will be bound after the hardware protocol is finalized.",
+    deviceBindingReservedDescription:
+      "This console edits a reserved control session only. Physical execution will be bound after the hardware protocol is finalized.",
     controlLoading: "Loading control preset...",
-    openControl: "Open control console",
+    openControl: "Open control",
+    globalTreatmentControls: "Global mask controls",
+    maskFaceMap: "Mask face map",
+    selectedZone: "Selected zone",
+    startTreatment: "Start treatment",
+    resumeTreatment: "Resume treatment",
+    pauseTreatment: "Pause treatment",
+    recordsTitle: "Treatment Records",
+    recordsDescription:
+      "Each record stores the executed timer, current status, linked plan, and the control values that were active when treatment started.",
+    loadingRecords: "Loading treatment records...",
+    noTreatmentRecordsYet: "No treatment record exists yet.",
+    noTreatmentRecordsDescription:
+      "Start a treatment from the Treatment Control page to create the first execution record.",
+    recordStartedAt: "Started at",
+    recordUpdatedAt: "Updated at",
+    recordDuration: "Duration",
+    recordLinkedPlan: "Linked treatment plan",
+    recordStatus: "Status",
+    recordStatusRunning: "Running",
+    recordStatusPaused: "Paused",
+    recordStatusCompleted: "Completed",
     roster: "Roster",
     userManagement: "User Management",
     create: "Create",
@@ -211,7 +285,8 @@ const messages: Record<AppLanguage, Record<MessageKey, string>> = {
     notesPlaceholder: "For example: combination skin, low temperature preferred during sensitivity.",
     genericError: "Request failed.",
     assessmentInProgress: "Assessment in progress",
-    assessmentInProgressDescription: "A simulated progress ring is shown while the image is being uploaded and the model is generating the structured result.",
+    assessmentInProgressDescription:
+      "A simulated progress ring is shown while the image is being uploaded and the model is generating the structured result.",
     treatThisRecord: "Treat this record",
     deleteRecordAction: "Delete record",
     deleteRecordConfirm: "Delete this archived assessment?",
@@ -225,18 +300,20 @@ const messages: Record<AppLanguage, Record<MessageKey, string>> = {
     deleteUserConfirm: "Delete this user and all archived records?"
   },
   zh: {
-    brandDescription: "云端视觉分析、每日档案追踪，以及面向硬件联动的光疗工作台。",
+    brandDescription: "云端视觉分析、档案驱动的治疗方案生成，以及面向智能光疗面罩的硬件控制工作台。",
     navAssessment: "面部测评",
     navArchive: "面部档案",
     navTreatment: "治疗方案",
     navControl: "治疗控制",
+    navRecords: "治疗记录",
     navUsers: "用户",
     activeSubject: "当前对象",
     selectUser: "选择或创建用户",
     bindUserFirst: "进入工作流前请先绑定人物档案。",
     language: "语言切换",
     heroEyebrow: "Production Workspace",
-    heroDelivered: "当前阶段已交付：多用户入口、面部状态识别、每日图像归档、治疗方案浏览，以及预留式治疗控制台。",
+    heroDelivered:
+      "当前阶段已交付：多用户入口、面部状态识别、每日档案沉淀、由档案触发的治疗方案、智能面罩治疗控制，以及治疗记录。",
     waitingUser: "等待用户选择",
     waitingUserDescription: "进入工作台前，请先选择或创建一个人物档案。",
     entryGateTitle: "先选择用户，再进入测评工作流",
@@ -247,7 +324,7 @@ const messages: Record<AppLanguage, Record<MessageKey, string>> = {
     userName: "用户名称",
     notes: "备注",
     createAndEnter: "创建并进入",
-    liveCapture: "Live Capture",
+    liveCapture: "实时拍摄",
     assessmentTitle: "面部状态识别区",
     visionModel: "视觉模型",
     uploadImage: "上传正面人脸图像",
@@ -267,23 +344,32 @@ const messages: Record<AppLanguage, Record<MessageKey, string>> = {
     submitAssessment: "开始识别并归档",
     submittingAssessment: "识别中...",
     waitingAssessment: "等待首份识别结果",
-    waitingAssessmentDescription: "完成上传后，这里会展示整体状态、分区问题与治疗建议。",
+    waitingAssessmentDescription: "完成上传后，这里会展示整体状态、分区问题与测评阶段的治疗建议。",
     todayAnalysis: "今日分析结果",
-    treatmentRecommendation: "治疗建议",
+    treatmentRecommendation: "测评阶段建议",
     lightType: "光类型",
     temperature: "温度",
     duration: "时长",
     humidification: "加湿",
     hardwarePayload: "硬件指令载荷",
-    history: "History",
+    history: "历史档案",
     archiveTitle: "面部档案",
     loadingArchive: "正在加载档案...",
     emptyArchive: "当前用户还没有历史测评记录。",
-    recordDetail: "单次测评详情",
+    recordDetail: "测评详情",
     selectHistory: "选择一条历史记录查看详细内容。",
-    treatmentWorkspace: "Treatment Workspace",
+    treatmentWorkspace: "治疗方案工作区",
     treatmentTitle: "治疗方案",
-    completeAssessmentFirst: "请先在面部测评页完成一次识别，再查看分区治疗方案。",
+    treatmentPlansPageDescription:
+      "治疗方案由历史档案单独生成。每张卡片对应一份面部档案，只展示整体严重性、分区与问题摘要，点击后进入治疗控制。",
+    loadingTreatmentPlans: "正在加载治疗方案...",
+    noTreatmentPlansYet: "当前还没有生成任何治疗方案。",
+    noTreatmentPlansDescription: "请先到面部档案页，对某份历史档案点击“新增治疗方案”。",
+    planSourceAssessment: "来源档案",
+    zonesAndIssues: "严重性、分区与问题",
+    generateTreatmentPlanAction: "新增治疗方案",
+    planGenerationProgress: "正在生成治疗方案",
+    planGenerationProgressDescription: "系统正在结合历史面部档案与诊疗资料库，生成结构化智能面罩治疗方案。",
     hardwareReserve: "硬件接口预留",
     hardwareReserveDescription: "当前展示的参数已经按设备控制命令结构组织，后续可直接对接光色、温度、加湿和时长控制。",
     hardwareCommandSchema: "命令协议",
@@ -292,14 +378,16 @@ const messages: Record<AppLanguage, Record<MessageKey, string>> = {
     controlWorkspace: "治疗控制工作台",
     controlTitle: "治疗控制",
     controlDescription: "该栏用于承接治疗方案并生成结构化的设备控制预设，后续将作为物理设备对接的核心工作区。",
-    selectPlanToControl: "请选择一个治疗方案卡片或分区，以载入治疗控制预设。",
-    pickZoneToControl: "选择分区进入直接控制",
-    goToTreatmentPlans: "请先完成一次测评，或前往治疗方案页选择要控制的分区。",
-    recommendedPlan: "推荐方案",
+    maskControlDescription: "智能光疗面罩按分区控制 LED 光色，并将加热、加湿、亮度和定时作为全局参数统一调节。",
+    selectPlanToControl: "请选择一份治疗方案，载入智能面罩治疗控制台。",
+    pickZoneToControl: "点击面部区域，编辑该区域的 LED 光色。",
+    goToTreatmentPlans: "请先前往治疗方案页，选择一份方案后再进入治疗控制。",
+    recommendedPlan: "当前方案",
     recommendedIssue: "对应问题",
-    recommendedSummary: "状况简述",
+    recommendedSummary: "方案说明",
     controlValues: "控制参数",
     lightColor: "光色",
+    zoneLedColor: "区域 LED 光色",
     brightness: "亮度",
     humidificationFrequency: "加湿频率",
     timer: "定时",
@@ -307,15 +395,34 @@ const messages: Record<AppLanguage, Record<MessageKey, string>> = {
     deviceBindingReserved: "设备接口预留",
     deviceBindingReservedDescription: "当前控制台只编辑保留的控制会话，真实物理执行会在后续硬件协议明确后接入。",
     controlLoading: "正在载入控制预设...",
-    openControl: "打开治疗控制",
-    roster: "Roster",
+    openControl: "进入治疗控制",
+    globalTreatmentControls: "全局治疗控制",
+    maskFaceMap: "面罩人脸图",
+    selectedZone: "当前选中区域",
+    startTreatment: "开始治疗",
+    resumeTreatment: "继续治疗",
+    pauseTreatment: "暂停治疗",
+    recordsTitle: "治疗记录",
+    recordsDescription: "每条记录会保存治疗开始时间、设定时长、关联方案、当前状态，以及当次启动时的控制参数。",
+    loadingRecords: "正在加载治疗记录...",
+    noTreatmentRecordsYet: "当前还没有治疗记录。",
+    noTreatmentRecordsDescription: "请先在治疗控制页启动一次治疗，系统会自动生成记录。",
+    recordStartedAt: "开始时间",
+    recordUpdatedAt: "更新时间",
+    recordDuration: "时长",
+    recordLinkedPlan: "关联治疗方案",
+    recordStatus: "状态",
+    recordStatusRunning: "进行中",
+    recordStatusPaused: "已暂停",
+    recordStatusCompleted: "已完成",
+    roster: "用户列表",
     userManagement: "用户档案管理",
-    create: "Create",
+    create: "创建",
     createUser: "创建用户",
     switchCurrentUser: "点击切换为当前用户",
     currentUser: "当前使用中",
     activeBadge: "使用中",
-    output: "Output",
+    output: "输出",
     focusAreas: "关注重点",
     userPlaceholder: "例如：Patient Lin",
     notesPlaceholder: "例如：混合肌、敏感期需低温方案",

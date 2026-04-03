@@ -29,6 +29,7 @@ class Settings(BaseSettings):
 
     dashscope_api_key: str = Field(default="", alias="DASHSCOPE_API_KEY")
     qwen_model_name: str = Field(default="qwen3.5-flash", alias="QWEN_MODEL_NAME")
+    qwen_plus_model_name: str = Field(default="qwen-plus", alias="QWEN_PLUS_MODEL_NAME")
     qwen_base_url: str = Field(
         default="https://dashscope.aliyuncs.com/compatible-mode/v1",
         alias="QWEN_BASE_URL",
@@ -67,6 +68,42 @@ class Settings(BaseSettings):
     @property
     def assessment_contract_path(self) -> Path:
         return self.common_dir / "contracts" / "skin_assessment_contract.json"
+
+    @property
+    def treatment_plan_contract_path(self) -> Path:
+        return self.common_dir / "contracts" / "treatment_plan_contract.json"
+
+    @property
+    def treatment_record_contract_path(self) -> Path:
+        return self.common_dir / "contracts" / "treatment_record_contract.json"
+
+    @property
+    def treatment_control_contract_path(self) -> Path:
+        return self.common_dir / "contracts" / "treatment_control_contract.json"
+
+    @property
+    def treatment_plan_prompt_template_path(self) -> Path:
+        return self.common_dir / "prompts" / "treatment_plan_generation_prompt.md"
+
+    @property
+    def treatment_plan_library_dir(self) -> Path:
+        return self.common_dir / "knowledge" / "treatment_plan_library"
+
+    @property
+    def treatment_plan_case_memory_path(self) -> Path:
+        return self.treatment_plan_library_dir / "case_memory.json"
+
+    @property
+    def treatment_plan_device_profile_path(self) -> Path:
+        return self.treatment_plan_library_dir / "mask_device_profile.json"
+
+    @property
+    def treatment_plan_guideline_path(self) -> Path:
+        return self.treatment_plan_library_dir / "clinical_guidelines.md"
+
+    @property
+    def treatment_plan_note_template_path(self) -> Path:
+        return self.treatment_plan_library_dir / "authoring_notes.md"
 
     @property
     def cors_origin_list(self) -> list[str]:

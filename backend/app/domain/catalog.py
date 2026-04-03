@@ -89,3 +89,19 @@ LIGHT_TYPE_TO_COLOR_MAP = {
     "infrared": "red",
     "mixed": "purple",
 }
+
+ISSUE_TO_LED_COLOR_MAP = {
+    "dehydration": "cyan",
+    "erythema": "green",
+    "oil_imbalance": "blue",
+    "texture_irregularity": "red",
+    "pigmentation": "yellow",
+    "comedonal_congestion": "blue",
+    "barrier_sensitivity": "green",
+    "elasticity_loss": "red",
+    "puffiness": "cyan",
+    "uneven_tone": "yellow",
+    "insufficient_data": "yellow",
+}
+
+TREATMENT_RECORD_STATUSES = {"running", "paused", "completed"}

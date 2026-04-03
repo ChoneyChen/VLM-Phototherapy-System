@@ -70,21 +70,27 @@ class TreatmentControlSafetyProfile(BaseModel):
 
 
 class TreatmentControlValues(BaseModel):
-    light_color_code: str
     brightness_percent: int
     temperature_celsius: int
     humidification_frequency_level: int
     timer_minutes: int
 
 
+class MaskZoneLedSetting(BaseModel):
+    zone_name: str
+    issue_category_code: str
+    severity: str
+    led_color_code: str
+
+
 class TreatmentControlCommand(BaseModel):
-    schema_version: str = "treatment_control.v1"
+    schema_version: str = "mask_control.v1"
     execution_channel: str = "reserved"
-    assessment_id: str
-    zone_code: str
-    recommended_issue_category_code: str
-    recommended_light_type_code: str
-    control_values: TreatmentControlValues
+    treatment_plan_id: str
+    user_public_id: str
+    overall_severity: str
+    global_settings: TreatmentControlValues
+    zone_led_settings: list[MaskZoneLedSetting]
     safety_profile: TreatmentControlSafetyProfile
 
 
@@ -92,28 +98,26 @@ class TreatmentControlCommandBuilder:
     def build(
         self,
         *,
-        assessment_id: str,
-        zone_code: str,
-        recommended_issue_category_code: str,
-        recommended_light_type_code: str,
-        light_color_code: str,
+        treatment_plan_id: str,
+        user_public_id: str,
+        overall_severity: str,
         brightness_percent: int,
         temperature_celsius: int,
         humidification_frequency_level: int,
         timer_minutes: int,
+        zone_led_settings: list[dict[str, str]],
     ) -> TreatmentControlCommand:
         return TreatmentControlCommand(
-            assessment_id=assessment_id,
-            zone_code=zone_code,
-            recommended_issue_category_code=recommended_issue_category_code,
-            recommended_light_type_code=recommended_light_type_code,
-            control_values=TreatmentControlValues(
-                light_color_code=light_color_code,
+            treatment_plan_id=treatment_plan_id,
+            user_public_id=user_public_id,
+            overall_severity=overall_severity,
+            global_settings=TreatmentControlValues(
                 brightness_percent=brightness_percent,
                 temperature_celsius=temperature_celsius,
                 humidification_frequency_level=humidification_frequency_level,
                 timer_minutes=timer_minutes,
             ),
+            zone_led_settings=[MaskZoneLedSetting(**zone) for zone in zone_led_settings],
             safety_profile=TreatmentControlSafetyProfile(
                 brightness_percent=ControlSafetyRange(**CONTROL_BRIGHTNESS_RANGE),
                 temperature_celsius=ControlSafetyRange(**CONTROL_TEMPERATURE_RANGE),

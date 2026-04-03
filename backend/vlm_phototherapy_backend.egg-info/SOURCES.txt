@@ -8,6 +8,8 @@ app/api/routers/__init__.py
 app/api/routers/assessments.py
 app/api/routers/health.py
 app/api/routers/treatment_control.py
+app/api/routers/treatment_plans.py
+app/api/routers/treatment_records.py
 app/api/routers/users.py
 app/core/__init__.py
 app/core/bootstrap.py
@@ -17,6 +19,8 @@ app/domain/catalog.py
 app/domain/services/__init__.py
 app/domain/services/assessment_service.py
 app/domain/services/treatment_control_service.py
+app/domain/services/treatment_plan_service.py
+app/domain/services/treatment_record_service.py
 app/domain/services/user_service.py
 app/infrastructure/__init__.py
 app/infrastructure/db/__init__.py
@@ -33,11 +37,15 @@ app/infrastructure/llm/factory.py
 app/infrastructure/llm/gemini_client.py
 app/infrastructure/llm/prompt_builder.py
 app/infrastructure/llm/qwen_client.py
+app/infrastructure/llm/qwen_plan_client.py
+app/infrastructure/llm/treatment_plan_prompt_builder.py
 app/infrastructure/storage/__init__.py
 app/infrastructure/storage/image_archive.py
 app/schemas/__init__.py
 app/schemas/assessment.py
 app/schemas/control.py
+app/schemas/treatment_plan.py
+app/schemas/treatment_record.py
 app/schemas/user.py
 tests/test_prompt_builder.py
 tests/test_user_ids.py

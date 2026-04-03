@@ -1,0 +1,42 @@
+{
+  "contract_name": "treatment_plan",
+  "version": "1.0",
+  "input_context": {
+    "source_assessment_id": "string",
+    "assessment_payload": "skin assessment detail payload",
+    "knowledge_sources": [
+      "treatment_plan_library/case_memory.json",
+      "treatment_plan_library/mask_device_profile.json",
+      "treatment_plan_library/clinical_guidelines.md"
+    ]
+  },
+  "output_contract": {
+    "overall_severity": "low | medium | high",
+    "summary_texts": {
+      "en": "string",
+      "zh": "string"
+    },
+    "rationale_texts": {
+      "en": "string",
+      "zh": "string"
+    },
+    "global_settings": {
+      "brightness_percent": 0,
+      "temperature_celsius": 0,
+      "humidification_frequency_level": 0,
+      "timer_minutes": 0
+    },
+    "zone_recommendations": [
+      {
+        "zone_name": "Forehead Zone",
+        "issue_category_code": "string",
+        "severity": "low | medium | high",
+        "led_color_code": "red | orange | yellow | green | cyan | blue | purple",
+        "notes_texts": {
+          "en": "string",
+          "zh": "string"
+        }
+      }
+    ]
+  }
+}
